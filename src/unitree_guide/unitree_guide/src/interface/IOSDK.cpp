@@ -49,8 +49,7 @@ IOSDK::IOSDK():_safe(UNITREE_LEGGED_SDK::LeggedType::Aliengo), _udp(UNITREE_LEGG
 #endif
 
 #ifdef ROBOT_TYPE_Go2
-IOSDK::IOSDK()
-{
+IOSDK::IOSDK(){
     InitLowCmd_dds();
     lowcmd_publisher.reset(new ChannelPublisher<unitree_go::msg::dds_::LowCmd_>(TOPIC_LOWCMD));
     lowcmd_publisher->InitChannel();
@@ -61,8 +60,22 @@ IOSDK::IOSDK()
     cmdPanel = new WirelessHandle();
     // 用键盘控制
     // cmdPanel = new KeyBoard();
+
+
+    #ifdef COMPILE_WITH_MOVE_BASE
+        _pub = _nh.advertise<sensor_msgs::JointState>("/realRobot/joint_states", 20);
+        _joint_state.name.resize(12);
+        _joint_state.position.resize(12);
+        _joint_state.velocity.resize(12);
+        _joint_state.effort.resize(12);
+    #endif  // COMPILE_WITH_MOVE_BASE
+
+
     pthread_mutex_init(&lowlevelmutex, NULL); // 初始化一个互斥锁（Mutex）
 }
+
+
+
 #endif
 
 // 如果不是go2，_lowCmd采用unitree_legged_sdk接口
@@ -115,8 +128,9 @@ void IOSDK::sendRecv(const LowlevelCmd *cmd, LowlevelState *state){
     }
 
     _pub.publish(_joint_state);
-}
 #endif  // COMPILE_WITH_MOVE_BASE
+}
+
 
 #else  //ROBOT_TYPE_Go2
 void IOSDK::InitLowCmd_dds(){
@@ -172,18 +186,31 @@ void IOSDK::sendRecv(const LowlevelCmd *cmd, LowlevelState *state){
 
     state->imu.quaternion[3] = _lowState.imu_state().quaternion()[3];
 
-
     cmdPanel->receiveHandle(&_lowState);
     // cmdPanel->JoystickHandler(&joystick);
     state->userCmd = cmdPanel->getUserCmd();
     state->userValue = cmdPanel->getUserValue();
 
 
+    #ifdef COMPILE_WITH_MOVE_BASE
+        _joint_state.header.stamp = ros::Time::now();
+        _joint_state.name = {"FR_hip_joint", "FR_thigh_joint", "FR_calf_joint", 
+                            "FL_hip_joint", "FL_thigh_joint", "FL_calf_joint",  
+                            "RR_hip_joint", "RR_thigh_joint", "RR_calf_joint", 
+                            "RL_hip_joint", "RL_thigh_joint", "RL_calf_joint"};
+        for(int i(0); i<12; ++i){
+            _joint_state.position[i] = state->motorState[i].q;
+            _joint_state.velocity[i] = state->motorState[i].dq;
+            _joint_state.effort[i]   = state->motorState[i].tauEst;
+        }
+
+        _pub.publish(_joint_state);
+    #endif  // COMPILE_WITH_MOVE_BASE
+
+
 
     pthread_mutex_unlock(&lowlevelmutex);
 }
-
-
 
 
 // dds low state send
@@ -235,7 +262,5 @@ uint32_t IOSDK::crc32_core(uint32_t* ptr, uint32_t len)
     return CRC32;
 }
 #endif
-
-
 
 #endif  // COMPILE_WITH_REAL_ROBOT

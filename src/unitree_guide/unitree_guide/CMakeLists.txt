@@ -8,7 +8,8 @@ set(CATKIN_MAKE ON)        # Use CATKIN_MAKE or not, ON or OFF
 set(SIMULATION OFF)         # Use Gazebo or not, ON or OFF
 set(REAL_ROBOT ON)          # Link real robot or not, ON or OFF
 set(DEBUG OFF)              # Use debug functions or not, ON or OFF
-set(MOVE_BASE OFF)               # Need move_base or not, ON or OFF 
+set(MOVE_BASE ON)           # Need move_base or not, ON or OFF 
+# set(MOVE_BASE ON) 才能在rviz中选择odom 
 
 if(NOT DEFINED ROBOT_TYPE)
     message(FATAL_ERROR "[CMake ERROR] Have not defined ROBOT_TYPE")

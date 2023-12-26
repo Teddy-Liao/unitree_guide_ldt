@@ -1,0 +1,17 @@
+<launch>
+
+    <arg name="user_debug" default="false"/>
+    
+    <param name="robot_description"  textfile="$(find go2_description)/urdf/go2_description.urdf" />
+   
+    <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher"
+          respawn="false" output="screen">
+        <remap from="/joint_states" to="/realRobot/joint_states"/> 
+        <!-- 这里的topic名需要和IOSDK.cpp中相对应：
+        _pub = _nh.advertise<sensor_msgs::JointState>("/realRobot/joint_states", 20); -->
+    </node>
+
+    <node pkg="rviz" type="rviz" name="rviz" respawn="false" output="screen"
+        args="-d $(find go2_description)/launch/check_joint.rviz"/>
+
+</launch>

@@ -41,12 +41,18 @@
           FR_hip_controller FR_thigh_controller FR_calf_controller
           RL_hip_controller RL_thigh_controller RL_calf_controller
           RR_hip_controller RR_thigh_controller RR_calf_controller "/>
-
+   
+    <!-- 通过robot_state_publisher将各个关节的状态以 topic 的形式发送出来，
+         这样 RViz 中的机器人就可以根据这个 topic 来运动四条腿。 -->
     <!-- convert joint states to TF transforms for rviz, etc -->
     <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher"
           respawn="false" output="screen">
         <remap from="/joint_states" to="/$(arg rname)_gazebo/joint_states"/>
     </node>
+
+    <!-- 根据所选的机器人型号，启动rviz -->
+    <node pkg="rviz" type="rviz" name="rviz" respawn="false" output="screen"
+          args="-d $(arg dollar)$(arg robot_path)/launch/check_joint.rviz"/>
 
     <!-- <node pkg="unitree_gazebo" type="servo" name="servo" required="true" output="screen"/> -->
 

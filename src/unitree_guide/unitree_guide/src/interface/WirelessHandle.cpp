@@ -81,6 +81,7 @@ void WirelessHandle::receiveHandle(unitree_go::msg::dds_::LowState_ *lowState)
     if(((int)_keyData.btn.components.L2 == 1) &&
        ((int)_keyData.btn.components.B  == 1)){
         userCmd = UserCommand::L2_B;
+        // std::cout << "The damping L2+B is pressed " << std::endl;
     }
     else if(((int)_keyData.btn.components.L2 == 1) &&
             ((int)_keyData.btn.components.A  == 1)){

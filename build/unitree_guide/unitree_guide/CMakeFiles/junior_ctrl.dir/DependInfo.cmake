@@ -35,12 +35,14 @@ set(CMAKE_CXX_COMPILER_ID "GNU")
 
 # Preprocessor definitions for this target.
 set(CMAKE_TARGET_DEFINITIONS_CXX
+  "COMPILE_WITH_MOVE_BASE"
   "COMPILE_WITH_REAL_ROBOT"
   "COMPILE_WITH_ROS"
   "ROBOT_TYPE_Go2"
   "ROSCONSOLE_BACKEND_LOG4CXX"
   "ROS_BUILD_SHARED_LIBS=1"
   "ROS_PACKAGE_NAME=\"unitree_guide\""
+  "RUN_ROS"
   )
 
 # The include file search paths:
